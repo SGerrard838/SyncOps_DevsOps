@@ -1,6 +1,15 @@
 //netflix
 import express from "express";
 import session from "express-session";
+import user_routes from "./routers/user.js";
+import subscriber_movie_routes from "./routers/subscriber/movie.js";
+import subscribe_routes from "./routers/subscribe.js";
+import forSubscriber from "./controllers/auth.js";
+import Movie from "./models/movie.js";
+import User from "./models/user.js";
+
+// socket (chatBot)
+import http from "http";
 
 const app = express();
 
@@ -18,6 +27,10 @@ app.use(
   })
 );
 
+app.use("/user", user_routes);
+app.use("/subscriber/movie", forSubscriber, subscriber_movie_routes);
+app.use("/subscription", subscribe_routes);
+
 app.set("view engine", "ejs");
 
 app.get("/create-table-movies", (req, res) => {
@@ -31,11 +44,49 @@ app.get("/create-table-users", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.render("index");
+  res.render("index", { user: req.session.user || "" });
 });
 
-app.get("/home", (req, res) => {
-  res.render("home");
+app.get("/forbidden", (req, res) => {
+  res.render("forbidden", { user: req.session.user || "" });
+});
+
+//API untuk account
+app.put("/api/subs/:id", (req, res) => {
+  User.update({ isSubscriber: true }, { where: { id: req.params.id } })
+    .then((results) => {
+      res.json({ status: 200, error: null, Response: results });
+    })
+    .catch((err) => {
+      res.json({ status: 502, error: err });
+    });
+});
+
+app.put("/api/user/:id", (req, res) => {
+  User.update(
+    { email: req.body.email, password: req.body.password },
+    { where: { id: req.params.id } }
+  )
+    .then((results) => {
+      res.json({ status: 200, error: null, Response: results });
+    })
+    .catch((err) => {
+      res.json({ status: 502, error: err });
+    });
+});
+
+app.delete("/api/user/:id", (req, res) => {
+  User.destroy({ where: { id: req.params.id } })
+    .then((results) => {
+      res.json({ status: 200, error: null, Response: results });
+    })
+    .catch((err) => {
+      res.json({ status: 502, error: err });
+    });
+});
+
+app.get("*", (req, res) => {
+  res.redirect("/forbidden");
 });
 
 const PORT = process.env.PORT || 3000;

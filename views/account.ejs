@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="../css/loginstyle.css">
+    <title>Netflix - Account</title>
+</head>
+<body>
+    <header class="showcase">
+        <div class="logo">
+            <img src="https://i.ibb.co/r5krrdz/logo.png">
+        </div>
+        <div class="showcase-content">
+            <div class="formm">
+                <form action="/user/login">
+                    <h1>Edit Account</h1>
+                    <div class="info">
+                        <input class="email" id="email" type="email" placeholder="Email" name="email" value="<%= user.email %>" required> <br>
+                        <input class="email" id="password" type="password" placeholder="Password" name="password" value="<%= user.password %>" required>
+                    </div>
+                    <div class="btn">
+                        <button class="btn-primary" type="submit" onclick=<%="edit(" + user.id+ ")" %> >Submit</button>
+                    </div>
+                    <div class="btn">
+                        <button class="btn-primary" type="submit" onclick=<%="del(" + user.id+ ")" %>>Delete Account</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <footer>
+            <div class="ftr-content">
+                <div class="contact">
+                    <a href="#">Quesions? Contact us.</a>
+                </div>
+                <div class="ftr">
+                    <a href="#">Gift Card Terms</a>
+                    <a href="#">Terms of Use</a>
+                    <a href="#">Privacy Statement</a>
+                </div>
+                <div class="select">
+                    <select>
+                        <option>English</option>
+                        <option>العربية</option>
+                        <option>Français</option> 
+                    </select>
+                </div>
+            </div>
+        </footer>
+    </header>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        const edit = (id) => {
+            axios({
+                method: 'put',
+                url: '/api/user/' + id,
+                data:{
+                    email: document.getElementById("email").value,
+                    password: document.getElementById("password").value
+                }
+            }).then((result) => {
+                alert('Info status: ' + result.status)
+                window.location = "/";
+            }).catch((err) => {
+                alert('error ' + err)
+            });
+        }
+        let del = (id) => {
+            axios.delete('/api/user/' + id).then((result) => {
+                alert('Info status: ' + result.status)
+                window.location = "/"
+            }).catch((err) => {
+                alert('error ' + err)
+            });
+        }
+    </script>
+</body>
+</html>
