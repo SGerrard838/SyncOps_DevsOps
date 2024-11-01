@@ -10,8 +10,13 @@ import User from "./models/user.js";
 
 // socket (chatBot)
 import http from "http";
+import { Server } from "socket.io";
+import formatMessage from "./utils/message.js";
+import { userJoin, getCurrentUser, userLeave, getRoomUsers} from "./utils/user.js";
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -85,10 +90,81 @@ app.delete("/api/user/:id", (req, res) => {
     });
 });
 
+//socket
+const botName = "Netflix Bot";
+// Run when client connects
+io.on("connection", (socket) => {
+  socket.on("joinRoom", ({ username, room }) => {
+    const user = userJoin(socket.id, username, room);
+    socket.join(user.room);
+    // Welcome current user
+    socket.emit("message", formatMessage(botName, "Hello there! How may i help you? \n 1. Account issues \n 2. Payment issues \n 3. Bug issues"));
+    // Send users and room info
+    io.to(user.room).emit("roomUsers", {
+      room: user.room,
+      users: getRoomUsers(user.room),
+    });
+  });
+
+  // Listen for chatMessage
+  socket.on("chatMessage", (msg) => {
+    const user = getCurrentUser(socket.id);
+    io.to(user.room).emit("message", formatMessage('You', msg));
+    if(msg === '1'){
+      io.emit("message", formatMessage(botName, 'Account issues. \n Please tell me your problem.. \n a. Can\'t log in \n b. Can\'t change password \n c. Another device you don\'t know log on into your account'))
+      socket.on("chatMessage", (psn) => {
+        if(psn === 'a' || psn === 'b'){
+          io.emit("message", formatMessage(botName, 'At your service my master, will be right back. \n Thank You'))
+        }
+        else if(psn === 'c'){
+          io.emit("message", formatMessage(botName, 'Another device log on. \n Please write which device are you using currently? \n We\'ll kick other devices and please change your password soon'))
+          socket.on("chatMessage", () => {
+            io.emit("message", formatMessage(botName, 'Thank You'))
+          })
+        }
+      })
+    }
+    else if(msg === '2'){
+      io.emit("message", formatMessage(botName, 'Payment issues. \n Please tell me your problem.. \n a. Paid but didn\'t receive any receipt \n b. Can\'t pay the subscription'))
+      socket.on("chatMessage", (psn) => {
+        if(psn === 'a' || psn === 'b'){
+          io.emit("message", formatMessage(botName, 'We\'ll be right back soon, Please Wait. \n Thank You'))
+        }
+      })
+    }
+    else if(msg === '3'){
+      socket.emit("message", formatMessage(botName, 'Bug Issues. \n You found a bug? Please tell us everything.'))
+      socket.on("chatMessage", () => {
+        io.emit("message", formatMessage(botName, 'Thank You, We\'ll check it soon.'))
+      })
+    }
+  });
+
+  // Runs when client disconnects
+  socket.on("disconnect", () => {
+    const user = userLeave(socket.id);
+    if (user) {
+      // Send users and room info
+      io.to(user.room).emit("roomUsers", {
+        room: user.room,
+        users: getRoomUsers(user.room),
+      });
+    }
+  });
+});
+
+app.get("/chat", (req, res) => {
+  res.render("room", { user: req.session.user || "" });
+});
+
+app.get("/chatRoom", (req, res) => {
+  res.render("chat", { user: req.session.user || "" });
+});
+
 app.get("*", (req, res) => {
   res.redirect("/forbidden");
 });
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
