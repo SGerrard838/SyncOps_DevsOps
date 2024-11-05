@@ -1,10 +1,10 @@
-PANDUAN Memasukkan projek ke dalam container Docker ....
+# PANDUAN Memasukkan projek ke dalam container Docker ....
 
 RUN CONTAINER & ENSURE SAME NETWORK :
 docker network create my_network
 docker build -t netflix .
 docker run --name mysql --network my_network -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=netflix -p 3306:3306 -d mysql:latest
-docker run --name netflix --network my_network -p 3000:3000 -d netflix_v2          
+docker run --name netflix --network my_network -p 3000:3000 -d netflix         
 docker network ls
 docker network inspect my_network
 (to stop docker = stop netflix, to start docker = start netflix, check log = docker logs netflix)
