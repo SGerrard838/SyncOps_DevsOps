@@ -1,4 +1,6 @@
 # PANDUAN Memasukkan projek ke dalam container Docker
+Pastikan anda telah memiliki Docker Dekstop dalam komputer anda,
+kemudian buka folder SyncOps_DevOps di terminal
 
 BUILD IMAGE & RUN CONTAINER in SAME NETWORK :
 docker network create my_network
@@ -10,7 +12,8 @@ IMPORT DATABASE TO MYSQL CONTAINER :
 docker cp "'path to netflix.sql file'" mysql:/netflix.sql
 docker exec -i mysql mysql -u root -proot netflix -e "source /netflix.sql"
 
-Setelah command diatas dieksekusi,code seharusnya sudah dapat berjalan beserta databasenya di localhost:3000.
+SETELAH COMMAND DIATAS DIEKSEKUSI,  APLIKASI SUDAH DAPAT BERJALAN BESERTA DATABASENYA DI LOCALHOST:3000 DALAM CONTAINER DOCKER.
+
 
   CHECK NETWORK :
 docker network ls
