@@ -19,4 +19,4 @@ jobs:
     - name: Push image to DockerHub
       run: |
         docker login -u juverio -p ${{ secrets.DOCKER_HUB_TOKEN }}
-        docker push juverio/netflix_v2:latest
+        docker push juverio/netflix_v2:testing
