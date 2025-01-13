@@ -1,10 +1,4 @@
 import { Sequelize, DataTypes } from "sequelize";
-<<<<<<< HEAD
-const sequelize = new Sequelize("netflix", "root", "root", {
-  host: "mysql",
-  dialect: "mysql",
-});
-=======
 
 const sequelize = new Sequelize(
   "netflix", 
@@ -15,7 +9,6 @@ const sequelize = new Sequelize(
     dialect: "mysql",
   }
 );
->>>>>>> aec44aa (Updated)
 
 (async () => {
   try {
