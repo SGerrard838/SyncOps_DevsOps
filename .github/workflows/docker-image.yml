@@ -15,8 +15,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag juverio/netflix_v2:testing
+      run: docker build . --file Dockerfile --tag juverio/netflix_v2:gerrard
     - name: Push image to DockerHub
       run: |
         docker login -u juverio -p ${{ secrets.DOCKER_HUB_TOKEN }}
-        docker push juverio/netflix_v2:testing
+        docker push juverio/netflix_v2:gerrard
