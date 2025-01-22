@@ -3,6 +3,8 @@ name: Build and Push Docker Images to DockerHub
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - '.github/workflows/docker-images.yml'
 
 jobs:
 
@@ -13,8 +15,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag juverio/netflix_v2:version1.2
+      run: docker build . --file Dockerfile --tag juverio/netflix_v2:version1.3
     - name: Push image to DockerHub
       run: |
         docker login -u juverio -p ${{ secrets.DOCKER_HUB_TOKEN }}
-        docker push juverio/netflix_v2:version1.2
+        docker push juverio/netflix_v2:version1.3

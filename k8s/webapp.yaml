@@ -16,7 +16,7 @@
       spec:
         containers:
         - name: webapp
-          image: juverio/netflix_v2:version1.2
+          image: juverio/netflix_v2:version1.3
           ports:
           - containerPort: 3000
           env: 
